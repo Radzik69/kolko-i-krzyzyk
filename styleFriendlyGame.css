@@ -1,0 +1,134 @@
+body {
+  background-color: dimgray;
+  display: grid;
+  grid-template-columns: 80% 20%;
+  grid-template-rows: 100vh;
+  grid-template-areas: "game history";
+  margin: 0;
+}
+
+#game {
+  grid-area: game;
+  border-right: 5px solid black;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 15vh 60vh 25vh;
+  grid-template-areas:
+    "top"
+    "mid"
+    "players";
+}
+
+#top {
+  grid-area: top;
+  text-align: center;
+}
+
+#mid {
+  grid-area: mid;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#players {
+  grid-area: players;
+  border-top: 5px solid black;
+  display: grid;
+  grid-template-columns: 50% 50%;
+  grid-template-areas: "playerX,playerO";
+}
+
+#playerX{
+  grid-area: "playerX";
+  border-right: 5px solid black;
+}
+
+#playerO{
+  grid-area: "playerO";
+}
+
+#history {
+  grid-area: history;
+}
+
+#gameGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  grid-column-gap: 5px;
+  grid-row-gap: 5px;
+}
+
+#A1 {
+  grid-area: 1 / 1 / 2 / 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#A2 {
+  grid-area: 1 / 2 / 2 / 3; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#A3 {
+  grid-area: 1 / 3 / 2 / 4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#B3 { 
+  grid-area: 2 / 3 / 3 / 4; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#B2 {
+  grid-area: 2 / 2 / 3 / 3; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#B1 {
+  grid-area: 2 / 1 / 3 / 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#C1 {
+  grid-area: 3 / 1 / 4 / 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#C2 {
+  grid-area: 3 / 2 / 4 / 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#C3 {
+  grid-area: 3 / 3 / 4 / 4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gameGridElement {
+  border: 1px dotted black;
+  width: 300px;
+  height: 175px;
+}
+
+.MovementStamped{
+  font-size: 150px;
+}
+
+#h1X{
+  visibility: hidden;
+}
+
+#h1O{
+  visibility: hidden;
+}
