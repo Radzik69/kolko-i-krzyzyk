@@ -1,3 +1,10 @@
+document.addEventListener("DOMContentLoaded", () => {
+	initFields();
+	setInitClickHandlersX();
+	FriendlyGameMoveX();
+	fetchGameHistory();
+});
+
 function TpFriendlyGame() {
 	window.location.replace("friendlyGame.html");
 }
@@ -35,9 +42,6 @@ function setInitClickHandlersX() {
 	C2.setAttribute("onclick", 'Movement("X", "C2")');
 	C3.setAttribute("onclick", 'Movement("X", "C3")');
 }
-
-initFields();
-setInitClickHandlersX();
 
 function setClickHandlers(player = "X") {
 	A1.getAttribute("canUse") &&
@@ -94,6 +98,9 @@ function FriendlyGameMoveO() {
 	divO.appendChild(h1O);
 }
 
+var moves = [];
+var numberOfMoves = 0;
+
 function Movement(player, Coordinates) {
 	var gridElement = document.getElementById(Coordinates);
 	var Xh1 = document.createElement("h1");
@@ -107,47 +114,15 @@ function Movement(player, Coordinates) {
 	if (player == "X") {
 		FriendlyGameMoveO();
 		console.log("X movement");
-
-		// var formX = document.createElement("form");
-		// formX.setAttribute("method", "POST");
-		// formX.setAttribute("action", "server.php");
-		// gridElement.appendChild(formX);
-
-		// var inputFormXPlayer = document.createElement("input");
-		// inputFormXPlayer.value = player;
-		// inputFormXPlayer.setAttribute("name", "player");
-		// inputFormXPlayer.style.display = "none";
-		// formX.appendChild(inputFormXPlayer);
-
-		// var inputFormXCoordinates = document.createElement("input");
-		// inputFormXCoordinates.value = Coordinates;
-		// inputFormXCoordinates.setAttribute("name", "coordinates");
-		// inputFormXCoordinates.style.display = "none";
-		// formX.appendChild(inputFormXCoordinates);
-
-		// formX.submit();
+		moves[numberOfMoves] = Coordinates;
+		console.log(moves[numberOfMoves]);
+		numberOfMoves++;
 	} else {
 		FriendlyGameMoveX();
 		console.log("O movement");
-
-		// var FormO = document.createElement("form");
-		// FormO.setAttribute("method", "POST");
-		// FormO.setAttribute("action", "server.php");
-		// gridElement.appendChild(FormO);
-
-		// var inputFormOPlayer = document.createElement("input");
-		// inputFormOPlayer.value = player;
-		// inputFormOPlayer.setAttribute("name", "player");
-		// inputFormOPlayer.style.display = "none";
-		// FormO.appendChild(inputFormOPlayer);
-
-		// var inputFormOCoordinates = document.createElement("input");
-		// inputFormOCoordinates.value = Coordinates;
-		// inputFormOCoordinates.setAttribute("name", "coordinates");
-		// inputFormOCoordinates.style.display = "none";
-		// FormO.appendChild(inputFormOCoordinates);
-
-		// FormO.submit();
+		moves[numberOfMoves] = Coordinates;
+		console.log(moves[numberOfMoves]);
+		numberOfMoves++;
 	}
 
 	winningConditions();
@@ -209,7 +184,7 @@ function winningConditions() {
 
 		playersDivX = document.getElementById("playerX");
 		var restarWinX = document.createElement("button");
-		restarWinX.setAttribute("onclick", "TpFriendlyGame()");
+		restarWinX.setAttribute("onclick", "NewGame('X')");
 		restarWinX.innerHTML = "RESTART";
 		playersDivX.appendChild(restarWinX);
 	} else if (
@@ -239,7 +214,7 @@ function winningConditions() {
 
 		playersDivO = document.getElementById("playerO");
 		var restarWinO = document.createElement("button");
-		restarWinO.setAttribute("onclick", "TpFriendlyGame()");
+		restarWinO.setAttribute("onclick", "NewGame('O')");
 		restarWinO.innerHTML = "RESTART";
 		playersDivO.appendChild(restarWinO);
 	} else if (
@@ -262,10 +237,204 @@ function winningConditions() {
 		top.appendChild(h1Draw);
 
 		var restartDraw = document.createElement("button");
-		restartDraw.setAttribute("onclick", "TpFriendlyGame()");
+		restartDraw.setAttribute("onclick", "NewGame('D')");
 		restartDraw.innerHTML = "RESTART";
 		top.appendChild(restartDraw);
 	}
 }
 
-FriendlyGameMoveX();
+function NewGame(whoWon) {
+	jsonMoves = JSON.stringify(moves);
+
+	var top = document.getElementById("top");
+	var form = document.createElement("form");
+	form.setAttribute("method", "POST");
+	form.setAttribute("action", "server.php");
+	var input1 = document.createElement("input");
+	input1.value = jsonMoves;
+	input1.setAttribute("visibility", "hidden");
+	input1.setAttribute("name", "movesInput");
+
+	var input2 = document.createElement("input");
+	input2.value = whoWon;
+	input2.setAttribute("visibility", "hidden");
+	input2.setAttribute("name", "whoWon");
+
+	top.appendChild(form);
+	form.appendChild(input1);
+	form.appendChild(input2);
+	form.submit();
+}
+
+function fetchGameHistory() {
+	fetch("server.php")
+		.then((response) => response.json())
+		.then((data) => {
+			console.log("Game history data:", data);
+			displayGameHistory(data);
+		})
+		.catch((error) => console.error("Error fetching game history:", error));
+}
+
+function displayGameHistory(games) {
+	const historyDiv = document.getElementById("history");
+	historyDiv.innerHTML = ""; // Clear any existing content
+	games.forEach((game) => {
+		const gameDiv = document.createElement("div");
+		gameDiv.className = "gameHistoryDiv";
+
+		const winner = document.createElement("p");
+		winner.innerHTML = `Winner: ${game.WhoWon}`;
+		gameDiv.appendChild(winner);
+
+		const moves = JSON.parse(game.Moves);
+
+		const tableHistory = document.createElement("table");
+		tableHistory.setAttribute(
+			"onclick",
+			`TpHistoryDetails("${game.ID}","${game.WhoWon}",${game.Moves})`
+		);
+
+		// Create 3x3 table structure
+		for (let i = 0; i < 3; i++) {
+			const tr = document.createElement("tr");
+			for (let j = 0; j < 3; j++) {
+				const td = document.createElement("td");
+				tr.appendChild(td);
+			}
+			tableHistory.appendChild(tr);
+		}
+
+		const cells = tableHistory.getElementsByTagName("td");
+
+		// Populate the table with moves
+		moves.forEach((move, index) => {
+			const player = index % 2 === 0 ? "X" : "O";
+			const cellIndex = getCellIndex(move);
+			if (cellIndex !== -1) {
+				cells[cellIndex].innerHTML = player;
+			}
+		});
+
+		gameDiv.appendChild(tableHistory);
+		historyDiv.appendChild(gameDiv);
+	});
+}
+
+function getCellIndex(coordinates) {
+	switch (coordinates) {
+		case "A1":
+			return 0;
+		case "A2":
+			return 1;
+		case "A3":
+			return 2;
+		case "B1":
+			return 3;
+		case "B2":
+			return 4;
+		case "B3":
+			return 5;
+		case "C1":
+			return 6;
+		case "C2":
+			return 7;
+		case "C3":
+			return 8;
+		default:
+			return -1;
+	}
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+	fetchGameHistory();
+});
+
+function TpHistoryDetails(id, gameWinner, gameMoves) {
+	console.log(gameWinner);
+	window.location.href = `history.html?id=${id}&gameWinner=${
+		gameWinner || null
+	}&gameMoves=${gameMoves || null}`;
+
+	// var menuHistory = document.getElementById("menuHistory");
+	// if (!menuHistory) {
+	// 	console.error("menuHistory element not found");
+	// 	return;
+	// }
+
+	// var input1 = document.createElement("input");
+	// input1.type = "hidden";
+	// input1.value = id;
+	// input1.name = "id";
+	// menuHistory.appendChild(input1);
+
+	// var input2 = document.createElement("input");
+	// input2.type = "hidden";
+	// input2.value = gameWinner;
+	// input2.name = "gameWinner";
+	// menuHistory.appendChild(input2);
+
+	// var input3 = document.createElement("input");
+	// input3.type = "hidden";
+	// input3.value = gameMoves;
+	// input3.name = "gameMoves";
+	// menuHistory.appendChild(input3);
+
+	// window.location.href = "history.html";
+}
+
+var HistoryArrayNumber = 0;
+function historyOnLoad() {
+	const queryParams = new URLSearchParams(window.location.search);
+	const id = queryParams.get("id");
+	const gameWinner = queryParams.get("gameWinner");
+	const gameMoves = queryParams.get("gameMoves");
+
+	document.getElementById("HistoryLeft").onclick = function () {
+		HistoryLeftGo(gameMoves);
+	};
+
+	document.getElementById("HistoryRight").onclick = function () {
+		HistoryRightGo(gameMoves);
+	};
+}
+
+function HistoryLeftGo(gameMoves) {
+	HistoryArrayNumber--;
+	if (gameMoves !== null) {
+		var gameMovesArray = gameMoves.split(",");
+		var HistorygridElement = document.getElementById(
+			"History" + gameMovesArray[HistoryArrayNumber]
+		);
+
+		HistorygridElement.innerHTML = "";
+
+		var Tura = (document.getElementById(
+			"Tura"
+		).innerHTML = `Round nr: ${HistoryArrayNumber}`);
+	} else {
+		console.error("gameMoves is null");
+	}
+}
+
+function HistoryRightGo(gameMoves) {
+	if (gameMoves !== null) {
+		var gameMovesArray = gameMoves.split(",");
+		var HistorygridElement = document.getElementById(
+			"History" + gameMovesArray[HistoryArrayNumber]
+		);
+
+		if (HistoryArrayNumber % 2 == 0) {
+			HistorygridElement.innerHTML = "X";
+		} else {
+			HistorygridElement.innerHTML = "O";
+		}
+
+		HistoryArrayNumber++;
+		var Tura = (document.getElementById(
+			"Tura"
+		).innerHTML = `Round nr: ${HistoryArrayNumber}`);
+	} else {
+		console.error("gameMoves is null");
+	}
+}

@@ -132,3 +132,17 @@ body {
 #h1O{
   visibility: hidden;
 }
+
+table{
+  height: 100px;
+  width: 100px;
+  text-align: center;
+}
+
+ tr td{
+  border: 1px solid black;
+}
+
+.gameHistoryDiv:hover{
+  background-color: gray;
+}
