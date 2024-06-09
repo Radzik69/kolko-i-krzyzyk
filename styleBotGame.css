@@ -1,0 +1,129 @@
+body {
+  background-color: dimgray;
+  display: grid;
+  grid-template-columns: 80% 20%;
+  grid-template-rows: 100vh;
+  grid-template-areas: "game history";
+  margin: 0;
+}
+
+#game {
+  grid-area: game;
+  border-right: 5px solid black;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 15vh 60vh 25vh;
+  grid-template-areas:
+    "top"
+    "mid"
+    "players";
+}
+
+#top {
+  grid-area: top;
+  text-align: center;
+}
+
+#mid {
+  grid-area: mid;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#players {
+  grid-area: players;
+  border-top: 5px solid black;
+  display: grid;
+  grid-template-columns: 50% 50%;
+  grid-template-areas: "playerX playerO";
+}
+
+#playerX {
+  grid-area: playerX;
+  border-right: 5px solid black;
+}
+
+#playerO {
+  grid-area: playerO;
+}
+
+#history {
+  grid-area: history;
+}
+
+#gameGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  grid-column-gap: 5px;
+  grid-row-gap: 5px;
+}
+
+.gameGridElement {
+  border: 1px dotted black;
+  width: 300px;
+  height: 175px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.MovementStamped {
+  font-size: 150px;
+}
+
+#h1X {
+  visibility: hidden;
+}
+
+#h1O {
+  visibility: hidden;
+}
+
+#playerX h1,
+#playerO h1 {
+  font-size: 2em;
+}
+
+#playerX p,
+#playerO p {
+  font-size: 1.5em;
+}
+
+/* styles.css */
+.square {
+  width: 60px;
+  height: 60px;
+  font-size: 24px;
+  text-align: center;
+}
+
+#board {
+  display: grid;
+  grid-template-columns: repeat(3, 60px);
+  grid-gap: 5px;
+  margin-bottom: 20px;
+}
+
+#status {
+  margin-bottom: 20px;
+}
+
+#history {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-top: 20px;
+  background-color: #f9f9f9;
+}
+
+#history ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+#history li {
+  margin-bottom: 5px;
+  padding: 5px;
+  border-bottom: 1px solid #ddd;
+}

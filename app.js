@@ -438,3 +438,7 @@ function HistoryRightGo(gameMoves) {
 		console.error("gameMoves is null");
 	}
 }
+
+function TpFriendlyGame() {
+	window.location.replace("friendlyGame.html");
+}
