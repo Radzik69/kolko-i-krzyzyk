@@ -5,6 +5,7 @@ body {
   grid-template-rows: 100vh;
   grid-template-areas: "game history";
   margin: 0;
+  overflow: hidden;
 }
 
 #game {
@@ -50,6 +51,7 @@ body {
 
 #history {
   grid-area: history;
+  overflow: auto;
 }
 
 #gameGrid {
@@ -91,39 +93,22 @@ body {
   font-size: 1.5em;
 }
 
-/* styles.css */
-.square {
-  width: 60px;
-  height: 60px;
-  font-size: 24px;
+.winning-cell {
+    background-color: rgb(13, 150, 70);
+    color: white;
+    font-weight: bold;
+}
+
+.gameHistoryDiv:hover{
+  background-color: gray;
+}
+
+table {
+  height: 100px;
+  width: 100px;
   text-align: center;
 }
 
-#board {
-  display: grid;
-  grid-template-columns: repeat(3, 60px);
-  grid-gap: 5px;
-  margin-bottom: 20px;
-}
-
-#status {
-  margin-bottom: 20px;
-}
-
-#history {
-  border: 1px solid #ddd;
-  padding: 10px;
-  margin-top: 20px;
-  background-color: #f9f9f9;
-}
-
-#history ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-#history li {
-  margin-bottom: 5px;
-  padding: 5px;
-  border-bottom: 1px solid #ddd;
+tr td {
+  border: 1px solid black;
 }

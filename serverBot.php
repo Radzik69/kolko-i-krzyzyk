@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $query = mysqli_query($conn, $sql);
 
   if ($query) {
-    echo "<script>window.location.replace('friendlyGame.html')</script>";
+    echo "<script>window.location.replace('botGame.html')</script>";
   }
 } else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
   $sql = "SELECT * FROM `games`";

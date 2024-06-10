@@ -33,6 +33,10 @@ button{
   font-size: 80px;
 }
 
+button:nth-child(1){
+  margin-left: 200px;
+}
+
 button:nth-child(2){
   margin-left: 400px;
 }
@@ -100,6 +104,13 @@ button:nth-child(2){
 }
 
 #Tura{
+  width: 270px;
   font-size: 50px;
   margin: 30px;
+}
+
+#buttonTp{
+  margin-left: 300px;
+  width: 180px;
+  font-size: 30px;
 }

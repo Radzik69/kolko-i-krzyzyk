@@ -168,25 +168,8 @@ function winningConditions() {
 		(h1A3 === "X" && h1B2 === "X" && h1C1 === "X")
 	) {
 		console.log("X wins");
-		var allDivs = document.querySelectorAll(".gameGridElement");
-		allDivs.forEach(function (singleDiv) {
-			singleDiv.removeAttribute("onclick");
-		});
-		playersDivO = document.getElementById("playerO");
-		playersDivO.style.backgroundColor = "dimgray";
-		playersDivO.querySelector("h1").innerHTML = "";
-		var top = document.getElementById("top");
-		top.style.backgroundColor = "green";
-
-		var h1WinX = document.createElement("h1");
-		h1WinX.innerHTML = "PLAYER X HAS WON 🥳🥳🥳";
-		top.appendChild(h1WinX);
-
-		playersDivX = document.getElementById("playerX");
-		var restarWinX = document.createElement("button");
-		restarWinX.setAttribute("onclick", "NewGame('X')");
-		restarWinX.innerHTML = "RESTART";
-		playersDivX.appendChild(restarWinX);
+		markWinningCells("X", h1A1, h1A2, h1A3, h1B1, h1B2, h1B3, h1C1, h1C2, h1C3);
+		handleGameEnd("X");
 	} else if (
 		(h1A1 === "O" && h1A2 === "O" && h1A3 === "O") ||
 		(h1B1 === "O" && h1B2 === "O" && h1B3 === "O") ||
@@ -198,25 +181,8 @@ function winningConditions() {
 		(h1A3 === "O" && h1B2 === "O" && h1C1 === "O")
 	) {
 		console.log("O wins");
-		var allDivs = document.querySelectorAll(".gameGridElement");
-		allDivs.forEach(function (singleDiv) {
-			singleDiv.removeAttribute("onclick");
-		});
-		playersDivX = document.getElementById("playerX");
-		playersDivX.style.backgroundColor = "dimgray";
-		playersDivX.querySelector("h1").innerHTML = "";
-		var top = document.getElementById("top");
-		top.style.backgroundColor = "green";
-
-		var h1WinO = document.createElement("h1");
-		h1WinO.innerHTML = "PLAYER O HAS WON 🥳🥳🥳";
-		top.appendChild(h1WinO);
-
-		playersDivO = document.getElementById("playerO");
-		var restarWinO = document.createElement("button");
-		restarWinO.setAttribute("onclick", "NewGame('O')");
-		restarWinO.innerHTML = "RESTART";
-		playersDivO.appendChild(restarWinO);
+		markWinningCells("O", h1A1, h1A2, h1A3, h1B1, h1B2, h1B3, h1C1, h1C2, h1C3);
+		handleGameEnd("O");
 	} else if (
 		h1A1 != null &&
 		h1A2 != null &&
@@ -229,18 +195,145 @@ function winningConditions() {
 		h1C3 != null
 	) {
 		console.log("draw");
-		var top = document.getElementById("top");
-		top.style.backgroundColor = "gray";
-
-		var h1Draw = document.createElement("h1");
-		h1Draw.innerHTML = "GAME ENDED IN A DRAW";
-		top.appendChild(h1Draw);
-
-		var restartDraw = document.createElement("button");
-		restartDraw.setAttribute("onclick", "NewGame('D')");
-		restartDraw.innerHTML = "RESTART";
-		top.appendChild(restartDraw);
+		handleGameEnd("draw");
 	}
+}
+
+function markWinningCells(
+	player,
+	h1A1,
+	h1A2,
+	h1A3,
+	h1B1,
+	h1B2,
+	h1B3,
+	h1C1,
+	h1C2,
+	h1C3
+) {
+	var winningCells = [];
+	if (h1A1 === player && h1A2 === player && h1A3 === player) {
+		winningCells.push("A1", "A2", "A3");
+	}
+	if (h1B1 === player && h1B2 === player && h1B3 === player) {
+		winningCells.push("B1", "B2", "B3");
+	}
+	if (h1C1 === player && h1C2 === player && h1C3 === player) {
+		winningCells.push("C1", "C2", "C3");
+	}
+	if (h1A1 === player && h1B1 === player && h1C1 === player) {
+		winningCells.push("A1", "B1", "C1");
+	}
+	if (h1A2 === player && h1B2 === player && h1C2 === player) {
+		winningCells.push("A2", "B2", "C2");
+	}
+	if (h1A3 === player && h1B3 === player && h1C3 === player) {
+		winningCells.push("A3", "B3", "C3");
+	}
+	if (h1A1 === player && h1B2 === player && h1C3 === player) {
+		winningCells.push("A1", "B2", "C3");
+	}
+	if (h1A3 === player && h1B2 === player && h1C1 === player) {
+		winningCells.push("A3", "B2", "C1");
+	}
+	winningCells.forEach((cellId) => {
+		document.getElementById(cellId).classList.add("winning-cell");
+	});
+}
+
+function handleGameEnd(result) {
+	document.getElementById("A1").setAttribute("onclick", "");
+	document.getElementById("A2").setAttribute("onclick", "");
+	document.getElementById("A3").setAttribute("onclick", "");
+	document.getElementById("B1").setAttribute("onclick", "");
+	document.getElementById("B2").setAttribute("onclick", "");
+	document.getElementById("B3").setAttribute("onclick", "");
+	document.getElementById("C1").setAttribute("onclick", "");
+	document.getElementById("C2").setAttribute("onclick", "");
+	document.getElementById("C3").setAttribute("onclick", "");
+
+	var top = document.getElementById("top");
+	top.style.backgroundColor = result === "draw" ? "gray" : "green";
+	var message = document.createElement("h1");
+	if (result === "draw") {
+		message.innerHTML = "GAME ENDED IN A DRAW";
+		var plejerO = document.getElementById("playerO");
+		plejerO.style.backgroundColor = "dimgray";
+		plejerO.querySelector("h1").style.display = "none";
+		document.getElementById("buttonTp").style.display = "none";
+	} else {
+		message.innerHTML = `PLAYER ${result} HAS WON 🥳🥳🥳`;
+
+		if (result == "X") {
+			var plejer = document.getElementById("playerO");
+			plejer.style.backgroundColor = "dimgray";
+			plejer.querySelector("h1").style.display = "none";
+			document.getElementById("buttonTp").style.display = "none";
+		} else if (result == "O") {
+			var plejer = document.getElementById("playerX");
+			plejer.style.backgroundColor = "dimgray";
+			plejer.querySelector("h1").style.display = "none";
+			document.getElementById("buttonTp").style.display = "none";
+		}
+	}
+	top.appendChild(message);
+
+	var restartButton = document.createElement("button");
+	restartButton.textContent = "RESTART";
+	restartButton.onclick = function () {
+		NewGame(result);
+	};
+	top.appendChild(restartButton);
+}
+
+function disableGrid() {
+	var gridElements = document.getElementsByClassName("gameGridElement");
+	for (var i = 0; i < gridElements.length; i++) {
+		gridElements[i].removeAttribute("onclick");
+		gridElements[i].removeAttribute("canUse");
+	}
+}
+
+function markWinningCells(
+	player,
+	h1A1,
+	h1A2,
+	h1A3,
+	h1B1,
+	h1B2,
+	h1B3,
+	h1C1,
+	h1C2,
+	h1C3
+) {
+	var winningCells = [];
+	if (h1A1 === player && h1A2 === player && h1A3 === player) {
+		winningCells.push("A1", "A2", "A3");
+	}
+	if (h1B1 === player && h1B2 === player && h1B3 === player) {
+		winningCells.push("B1", "B2", "B3");
+	}
+	if (h1C1 === player && h1C2 === player && h1C3 === player) {
+		winningCells.push("C1", "C2", "C3");
+	}
+	if (h1A1 === player && h1B1 === player && h1C1 === player) {
+		winningCells.push("A1", "B1", "C1");
+	}
+	if (h1A2 === player && h1B2 === player && h1C2 === player) {
+		winningCells.push("A2", "B2", "C2");
+	}
+	if (h1A3 === player && h1B3 === player && h1C3 === player) {
+		winningCells.push("A3", "B3", "C3");
+	}
+	if (h1A1 === player && h1B2 === player && h1C3 === player) {
+		winningCells.push("A1", "B2", "C3");
+	}
+	if (h1A3 === player && h1B2 === player && h1C1 === player) {
+		winningCells.push("A3", "B2", "C1");
+	}
+	winningCells.forEach((cellId) => {
+		document.getElementById(cellId).classList.add("winning-cell");
+	});
 }
 
 function NewGame(whoWon) {
@@ -252,12 +345,12 @@ function NewGame(whoWon) {
 	form.setAttribute("action", "server.php");
 	var input1 = document.createElement("input");
 	input1.value = jsonMoves;
-	input1.setAttribute("visibility", "hidden");
+	input1.style.display = "none";
 	input1.setAttribute("name", "movesInput");
 
 	var input2 = document.createElement("input");
 	input2.value = whoWon;
-	input2.setAttribute("visibility", "hidden");
+	input2.style.display = "none";
 	input2.setAttribute("name", "whoWon");
 
 	top.appendChild(form);
@@ -278,7 +371,7 @@ function fetchGameHistory() {
 
 function displayGameHistory(games) {
 	const historyDiv = document.getElementById("history");
-	historyDiv.innerHTML = ""; // Clear any existing content
+	historyDiv.innerHTML = "";
 	games.forEach((game) => {
 		const gameDiv = document.createElement("div");
 		gameDiv.className = "gameHistoryDiv";
@@ -295,7 +388,6 @@ function displayGameHistory(games) {
 			`TpHistoryDetails("${game.ID}","${game.WhoWon}",${game.Moves})`
 		);
 
-		// Create 3x3 table structure
 		for (let i = 0; i < 3; i++) {
 			const tr = document.createElement("tr");
 			for (let j = 0; j < 3; j++) {
@@ -307,7 +399,6 @@ function displayGameHistory(games) {
 
 		const cells = tableHistory.getElementsByTagName("td");
 
-		// Populate the table with moves
 		moves.forEach((move, index) => {
 			const player = index % 2 === 0 ? "X" : "O";
 			const cellIndex = getCellIndex(move);
@@ -355,32 +446,6 @@ function TpHistoryDetails(id, gameWinner, gameMoves) {
 	window.location.href = `history.html?id=${id}&gameWinner=${
 		gameWinner || null
 	}&gameMoves=${gameMoves || null}`;
-
-	// var menuHistory = document.getElementById("menuHistory");
-	// if (!menuHistory) {
-	// 	console.error("menuHistory element not found");
-	// 	return;
-	// }
-
-	// var input1 = document.createElement("input");
-	// input1.type = "hidden";
-	// input1.value = id;
-	// input1.name = "id";
-	// menuHistory.appendChild(input1);
-
-	// var input2 = document.createElement("input");
-	// input2.type = "hidden";
-	// input2.value = gameWinner;
-	// input2.name = "gameWinner";
-	// menuHistory.appendChild(input2);
-
-	// var input3 = document.createElement("input");
-	// input3.type = "hidden";
-	// input3.value = gameMoves;
-	// input3.name = "gameMoves";
-	// menuHistory.appendChild(input3);
-
-	// window.location.href = "history.html";
 }
 
 var HistoryArrayNumber = 0;
@@ -400,7 +465,11 @@ function historyOnLoad() {
 }
 
 function HistoryLeftGo(gameMoves) {
+	if (HistoryArrayNumber < 0) {
+		HistoryArrayNumber = 0;
+	}
 	HistoryArrayNumber--;
+	console.log(HistoryArrayNumber);
 	if (gameMoves !== null) {
 		var gameMovesArray = gameMoves.split(",");
 		var HistorygridElement = document.getElementById(
@@ -418,7 +487,12 @@ function HistoryLeftGo(gameMoves) {
 }
 
 function HistoryRightGo(gameMoves) {
+	if (HistoryArrayNumber < 0) {
+		HistoryArrayNumber = 0;
+	}
 	if (gameMoves !== null) {
+		console.log(HistoryArrayNumber);
+
 		var gameMovesArray = gameMoves.split(",");
 		var HistorygridElement = document.getElementById(
 			"History" + gameMovesArray[HistoryArrayNumber]
@@ -426,10 +500,9 @@ function HistoryRightGo(gameMoves) {
 
 		if (HistoryArrayNumber % 2 == 0) {
 			HistorygridElement.innerHTML = "X";
-		} else {
+		} else if (HistoryArrayNumber % 2 !== 0) {
 			HistorygridElement.innerHTML = "O";
 		}
-
 		HistoryArrayNumber++;
 		var Tura = (document.getElementById(
 			"Tura"
@@ -441,4 +514,23 @@ function HistoryRightGo(gameMoves) {
 
 function TpFriendlyGame() {
 	window.location.replace("friendlyGame.html");
+}
+
+function TpBotGame() {
+	window.location.replace("botGame.html");
+}
+
+function spawnTp() {
+	window.location.replace("index.html");
+}
+
+function buttonMenu1() {
+	var top = document.getElementById("top");
+
+	var button = document.createElement("button");
+	button.setAttribute("id", "buttonTp");
+	button.setAttribute("onclick", "spawnTp()");
+	button.innerHTML = "Go to starting page";
+
+	top.appendChild(button);
 }

@@ -8,17 +8,19 @@ function TpFriendlyGame() {
 	window.location.replace("friendlyGame.html");
 }
 
-var A1 = document.getElementById("A1");
-var A2 = document.getElementById("A2");
-var A3 = document.getElementById("A3");
-var B1 = document.getElementById("B1");
-var B2 = document.getElementById("B2");
-var B3 = document.getElementById("B3");
-var C1 = document.getElementById("C1");
-var C2 = document.getElementById("C2");
-var C3 = document.getElementById("C3");
+var A1, A2, A3, B1, B2, B3, C1, C2, C3;
 
 function initFields() {
+	A1 = document.getElementById("A1");
+	A2 = document.getElementById("A2");
+	A3 = document.getElementById("A3");
+	B1 = document.getElementById("B1");
+	B2 = document.getElementById("B2");
+	B3 = document.getElementById("B3");
+	C1 = document.getElementById("C1");
+	C2 = document.getElementById("C2");
+	C3 = document.getElementById("C3");
+
 	A1.setAttribute("canUse", true);
 	A2.setAttribute("canUse", true);
 	A3.setAttribute("canUse", true);
@@ -122,8 +124,10 @@ function Movement(player, Coordinates) {
 	if (player == human) {
 		FriendlyGameMoveO();
 		if (!calculateWinner(board) && board.some((cell) => cell === null)) {
-			const botMove = bestMove();
-			Movement(bot, botMove);
+			setTimeout(() => {
+				const botMove = bestMove();
+				Movement(bot, botMove);
+			}, 500);
 		}
 	} else {
 		FriendlyGameMoveX();
@@ -140,27 +144,43 @@ function winningConditions() {
 		allDivs.forEach(function (singleDiv) {
 			singleDiv.removeAttribute("onclick");
 		});
+
+		const winningCombination = getWinningCombination(board);
+		winningCombination.forEach((index) => {
+			const cell = getCellFromIndex(index);
+			document.getElementById(cell).classList.add("winning-cell");
+		});
+
 		const playersDiv =
 			winner === "X"
 				? document.getElementById("playerO")
 				: document.getElementById("playerX");
 		playersDiv.style.backgroundColor = "dimgray";
 		playersDiv.querySelector("h1").innerHTML = "";
+
 		var top = document.getElementById("top");
 		top.style.backgroundColor = "green";
 
 		var h1Win = document.createElement("h1");
 		h1Win.innerHTML = `PLAYER ${winner} HAS WON 🥳🥳🥳`;
-		top.appendChild(h1Win);
+		if (!top.querySelector("h1")) {
+			top.appendChild(h1Win);
+			var restartDraw = document.createElement("button");
+			restartDraw.setAttribute("onclick", "NewGame('D')");
+			restartDraw.innerHTML = "RESTART";
+			top.appendChild(restartDraw);
+			document.getElementById("buttonTp").style.display = "none";
+			var plejerO = document.getElementById("playerO");
+			plejerO.style.backgroundColor = "dimgray";
+			plejerO.querySelectorAll("h1").style.visibility = "hidden";
+		}
 
 		const playersDivWin =
 			winner === "X"
 				? document.getElementById("playerX")
 				: document.getElementById("playerO");
-		var restarWin = document.createElement("button");
-		restarWin.setAttribute("onclick", `NewGame('${winner}')`);
-		restarWin.innerHTML = "RESTART";
-		playersDivWin.appendChild(restarWin);
+		playersDivWin.appendChild(restartWin);
+		document.getElementById("buttonTp").style.display = "none";
 	} else if (board.every((cell) => cell !== null)) {
 		console.log("draw");
 		var top = document.getElementById("top");
@@ -168,13 +188,40 @@ function winningConditions() {
 
 		var h1Draw = document.createElement("h1");
 		h1Draw.innerHTML = "GAME ENDED IN A DRAW";
-		top.appendChild(h1Draw);
-
-		var restartDraw = document.createElement("button");
-		restartDraw.setAttribute("onclick", "NewGame('D')");
-		restartDraw.innerHTML = "RESTART";
-		top.appendChild(restartDraw);
+		if (!top.querySelector("h1")) {
+			top.appendChild(h1Draw);
+			var restartDraw = document.createElement("button");
+			restartDraw.setAttribute("onclick", "NewGame('D')");
+			restartDraw.innerHTML = "RESTART";
+			var plejerO = document.getElementById("playerO");
+			plejerO.style.backgroundColor = "dimgray";
+			plejerO.querySelectorAll("h1").style.visibility = "hidden";
+			top.appendChild(restartDraw);
+			document.getElementById("buttonTp").style.display = "none";
+		}
 	}
+}
+
+function getWinningCombination(board) {
+	const lines = [
+		[0, 1, 2],
+		[3, 4, 5],
+		[6, 7, 8],
+		[0, 3, 6],
+		[1, 4, 7],
+		[2, 5, 8],
+		[0, 4, 8],
+		[2, 4, 6],
+	];
+
+	for (const line of lines) {
+		const [a, b, c] = line;
+		if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+			return line;
+		}
+	}
+
+	return [];
 }
 
 function NewGame(whoWon) {
@@ -183,15 +230,15 @@ function NewGame(whoWon) {
 	var top = document.getElementById("top");
 	var form = document.createElement("form");
 	form.setAttribute("method", "POST");
-	form.setAttribute("action", "server.php");
+	form.setAttribute("action", "serverBot.php");
 	var input1 = document.createElement("input");
 	input1.value = jsonMoves;
-	input1.setAttribute("visibility", "hidden");
+	input1.style.display = "none";
 	input1.setAttribute("name", "movesInput");
 
 	var input2 = document.createElement("input");
 	input2.value = whoWon;
-	input2.setAttribute("visibility", "hidden");
+	input2.style.display = "none";
 	input2.setAttribute("name", "whoWon");
 
 	top.appendChild(form);
@@ -212,7 +259,7 @@ function fetchGameHistory() {
 
 function displayGameHistory(games) {
 	const historyDiv = document.getElementById("history");
-	historyDiv.innerHTML = ""; // Clear any existing content
+	historyDiv.innerHTML = "";
 	games.forEach((game) => {
 		const gameDiv = document.createElement("div");
 		gameDiv.className = "gameHistoryDiv";
@@ -229,35 +276,59 @@ function displayGameHistory(games) {
 			`TpHistoryDetails("${game.ID}","${game.WhoWon}",${game.Moves})`
 		);
 
-		// Create 3x3 table structure
 		for (let i = 0; i < 3; i++) {
-			const row = document.createElement("tr");
+			const tr = document.createElement("tr");
 			for (let j = 0; j < 3; j++) {
-				const cell = document.createElement("td");
-				const moveIndex = i * 3 + j;
-				cell.textContent = moves[moveIndex] || "";
-				row.appendChild(cell);
+				const td = document.createElement("td");
+				tr.appendChild(td);
 			}
-			tableHistory.appendChild(row);
+			tableHistory.appendChild(tr);
 		}
+
+		const cells = tableHistory.getElementsByTagName("td");
+
+		moves.forEach((move, index) => {
+			const player = index % 2 === 0 ? "X" : "O";
+			const cellIndex = getCellIndex(move);
+			if (cellIndex !== -1) {
+				cells[cellIndex].innerHTML = player;
+			}
+		});
 
 		gameDiv.appendChild(tableHistory);
 		historyDiv.appendChild(gameDiv);
 	});
 }
 
-function TpHistoryDetails(id, whoWon, moves) {
-	window.location.replace(
-		`historyDetails.php?id=${id}&whoWon=${whoWon}&moves=${moves}`
-	);
+document.addEventListener("DOMContentLoaded", () => {
+	fetchGameHistory();
+});
+
+function TpHistoryDetails(id, gameWinner, gameMoves) {
+	console.log(gameWinner);
+	window.location.href = `history.html?id=${id}&gameWinner=${
+		gameWinner || null
+	}&gameMoves=${gameMoves || null}`;
 }
 
-// Helper functions for the minimax implementation
-function getCellIndex(coordinate) {
-	const row = coordinate[0].toLowerCase();
-	const col = parseInt(coordinate[1]);
-	const rowIndex = row.charCodeAt(0) - "a".charCodeAt(0);
-	return rowIndex * 3 + (col - 1);
+function getCellIndex(cell) {
+	const mapping = {
+		A1: 0,
+		A2: 1,
+		A3: 2,
+		B1: 3,
+		B2: 4,
+		B3: 5,
+		C1: 6,
+		C2: 7,
+		C3: 8,
+	};
+	return mapping[cell];
+}
+
+function getCellFromIndex(index) {
+	const mapping = ["A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"];
+	return mapping[index];
 }
 
 function calculateWinner(board) {
@@ -271,8 +342,7 @@ function calculateWinner(board) {
 		[0, 4, 8],
 		[2, 4, 6],
 	];
-	for (let i = 0; i < lines.length; i++) {
-		const [a, b, c] = lines[i];
+	for (const [a, b, c] of lines) {
 		if (board[a] && board[a] === board[b] && board[a] === board[c]) {
 			return board[a];
 		}
@@ -281,22 +351,6 @@ function calculateWinner(board) {
 }
 
 function bestMove() {
-	// Probability to make a random move
-	const randomnessFactor = 0.3; // 30% chance to make a random move
-
-	// Randomly decide whether to make a random move or the best move
-	if (Math.random() < randomnessFactor) {
-		let availableMoves = [];
-		for (let i = 0; i < board.length; i++) {
-			if (board[i] === null) {
-				availableMoves.push(i);
-			}
-		}
-		const randomIndex = Math.floor(Math.random() * availableMoves.length);
-		return getCoordinatesFromIndex(availableMoves[randomIndex]);
-	}
-
-	// Otherwise, make the best move as per minimax algorithm
 	let bestScore = -Infinity;
 	let move;
 	for (let i = 0; i < board.length; i++) {
@@ -310,21 +364,16 @@ function bestMove() {
 			}
 		}
 	}
-	return getCoordinatesFromIndex(move);
+	return getCellFromIndex(move);
 }
 
 function minimax(board, depth, isMaximizing) {
-	const scores = {
-		O: 1,
-		X: -1,
-		tie: 0,
-	};
-	const result = calculateWinner(board);
+	let result = calculateWinner(board);
 	if (result !== null) {
-		return scores[result];
+		return result === bot ? 10 - depth : result === human ? depth - 10 : 0;
 	}
-	if (!board.includes(null)) {
-		return scores["tie"];
+	if (board.every((cell) => cell !== null)) {
+		return 0;
 	}
 
 	if (isMaximizing) {
@@ -352,9 +401,17 @@ function minimax(board, depth, isMaximizing) {
 	}
 }
 
-function getCoordinatesFromIndex(index) {
-	const rows = ["A", "B", "C"];
-	const row = rows[Math.floor(index / 3)];
-	const col = (index % 3) + 1;
-	return row + col;
+function spawnTp() {
+	window.location.replace("index.html");
+}
+
+function buttonMenu1() {
+	var top = document.getElementById("top");
+
+	var button = document.createElement("button");
+	button.setAttribute("id", "buttonTp");
+	button.setAttribute("onclick", "spawnTp()");
+	button.innerHTML = "Go to starting page";
+
+	top.appendChild(button);
 }

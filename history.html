@@ -6,7 +6,7 @@
   <title>Tic Tac Toe</title>
   <link rel="stylesheet" href="styleHistory.css">
 </head>
-<body onload="historyOnLoad()">
+<body onload="historyOnLoad(); buttonMenu2();">
 
   <div id="Historymid">
     <div id="grid">
@@ -25,6 +25,7 @@
     <button id="HistoryLeft">←</button>
     <h1 id="Tura"></h1>
     <button id="HistoryRight">→</button>
+    <button onclick="spawnTp()" id="buttonTp">teleport to starting menu</button>
   </div>
 
   <script src="app.js"></script>

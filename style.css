@@ -5,6 +5,7 @@
   grid-template-rows: 100vh;
   grid-template-areas: "game,history";
   margin: 0;
+  overflow: hidden;
 }
 
 #selectMode{
@@ -21,4 +22,22 @@
   margin: 50px;
   text-align: center;
   
+}
+
+table{
+  height: 100px;
+  width: 100px;
+  text-align: center;
+}
+
+ tr td{
+  border: 1px solid black;
+}
+
+.gameHistoryDiv:hover{
+  background-color: gray;
+}
+
+#history{
+  overflow: auto;
 }

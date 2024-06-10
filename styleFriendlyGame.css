@@ -5,6 +5,7 @@ body {
   grid-template-rows: 100vh;
   grid-template-areas: "game history";
   margin: 0;
+  overflow: hidden;
 }
 
 #game {
@@ -50,6 +51,7 @@ body {
 
 #history {
   grid-area: history;
+  overflow: auto;
 }
 
 #gameGrid {
@@ -145,4 +147,10 @@ table{
 
 .gameHistoryDiv:hover{
   background-color: gray;
+}
+
+.winning-cell {
+  background-color: rgb(13, 150, 70);
+  color: white;
+  font-weight: bold;
 }
